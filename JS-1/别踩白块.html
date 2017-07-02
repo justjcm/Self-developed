@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"> 
+	<title>game</title>
+<style>	
+*{
+	margin: 0;
+	font-family: '微软雅黑','黑体',sans-serif;
+}
+h1,h2{
+	margin-left: 40%;
+}
+#cont{
+	margin-top: 100px;
+	margin-left: 30%;
+	width: 400px;
+	height: 400px;
+	border: 1px solid blue;
+	position: relative;
+}
+#main{
+	width: 400px;
+	height: 400px;
+	/*border: 1px solid red;*/
+	position: relative;
+	top: -100px;
+
+}
+.row{
+	height: 100px;
+}
+.row div{
+	width: 98px;
+	height: 98px;
+	border: 1px solid black;
+	float: left;
+}
+.black{
+	background-color: black;
+}
+</style>
+</head>
+<body>
+<h1>别踩白块</h1>
+<h2>得分：</h2>
+<h2 id="sc">0</h2>
+<div id="cont">
+	<div id="main">
+	</div>
+</div>
+</body>
+<script type="text/javascript">
+var main=document.getElementById('main');
+var clock=null;
+var sta=true;
+var speed=2;
+function getStyle(el , attr) {
+    return el.currentStyle ? el.currentStyle[attr] : getComputedStyle(el,null)[attr];
+}
+
+//创建DIV
+function cDiv(className){
+	var div=document.createElement('div');
+	if(className){
+		div.className=className;
+	}
+	return div;
+}
+function cRow(){
+	var ind= Math.floor(Math.random()*4);//造0~3之间随机数
+	//造行div
+	var row=cDiv('row');
+	for (var i = 0; i <4; i++) {
+		if (i==ind) {
+			row.appendChild(cDiv('black'));
+		}else{
+			row.appendChild(cDiv());
+		}	
+	}
+	//把row放进main中
+	if (main.firstChild) {
+		main.insertBefore(row,main.firstChild);
+	}else{
+		main.appendChild(row);
+	}
+	
+	
+}
+
+function move(){
+	var top=getStyle(main,'top');
+	top=parseInt(top)+ speed;
+	main.style.top=top + 'px'
+
+	if (top>0) {
+		cRow();
+		main.style.top='-100px';
+		//判断最后一行是否有黑块
+		if(main.lastChild.pass == undefined) {
+            //fail();
+        }
+	}
+	if (main.children.length>=5) {
+		main.removeChild(main.lastChild);
+	
+	}
+	
+}
+function init(){
+	for (var i =0; i <4; i++) {
+		cRow();
+	}
+	main.onclick=function(ev){
+		ev.target=ev.target||ev.srcElement;
+
+		if(sta==false){
+			alert('start again');
+		}
+		else if (ev.target.className=='') {
+			fail();
+		}
+		else{
+				ev.target.className='';
+				//ev.target.parentNode.pass = true;
+				console.log(ev);
+				var score=document.getElementById('sc');
+				var sc=parseInt(score.innerHTML)+1;
+				score.innerHTML=sc;
+				if (sc%10==0) {
+					speed+=1;
+				}
+		
+		}
+	}	
+	clock=window.setInterval('move();',40);
+}
+function fail(){
+	clearInterval(clock);
+	alert('you lose');
+	sta=false;
+}
+init();
+
+
+
+</script>
+</html>
